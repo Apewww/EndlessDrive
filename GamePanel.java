@@ -64,9 +64,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     private final Rectangle btnShopExit = new Rectangle();
 
     // Settings Buttons
-    private final Rectangle btnToggleSound = new Rectangle();
-    private final Rectangle btnToggleWindow = new Rectangle();
+    private final Rectangle btnToggleSound  = new Rectangle();
     private final Rectangle btnSettingsExit = new Rectangle();
+
+    // Main Menu Exit Button
+    private final Rectangle btnExit = new Rectangle();
 
     // Game Over Buttons
     private final Rectangle btnGoAgain = new Rectangle();
@@ -106,10 +108,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         int centerY = h / 2;
 
-        // Menu Buttons (centered horizontally)
-        btnPlay.setBounds(w / 2 - 100, centerY - 30, 200, 45);
-        btnShop.setBounds(w / 2 - 100, centerY + 30, 200, 45);
-        btnSettings.setBounds(w / 2 - 100, centerY + 90, 200, 45);
+        // Menu Buttons (centered horizontally, 4 items spaced evenly)
+        btnPlay.setBounds(w / 2 - 100, centerY - 50, 200, 45);
+        btnShop.setBounds(w / 2 - 100, centerY - -10, 200, 45);
+        btnSettings.setBounds(w / 2 - 100, centerY - -70, 200, 45);
+        btnExit.setBounds(w / 2 - 100, centerY - -130, 200, 45);
 
         // Shop Buttons
         btnShopPrev.setBounds(w / 2 - 250, centerY + 30, 60, 45);
@@ -118,8 +121,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         btnShopExit.setBounds(50, 50, 100, 40);
 
         // Settings Buttons
-        btnToggleSound.setBounds(w / 2 - 150, centerY - 90, 300, 45);
-        btnToggleWindow.setBounds(w / 2 - 150, centerY - 20, 300, 45);
+        btnToggleSound.setBounds(w / 2 - 150, centerY - 60, 300, 45);
         btnSettingsExit.setBounds(50, 50, 100, 40);
 
         // Game Over Buttons
@@ -563,9 +565,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         g.drawString(coinBal, 40, 40);
 
         // Draw Action Buttons
-        drawCustomButton(g, btnPlay, "DRIVE NOW", new Color(0, 240, 255), true);
-        drawCustomButton(g, btnShop, "NEON SHOP", new Color(255, 0, 127), false);
-        drawCustomButton(g, btnSettings, "SETTINGS", Color.GRAY, false);
+        drawCustomButton(g, btnPlay,     "DRIVE NOW",  new Color(0, 240, 255), true);
+        drawCustomButton(g, btnShop,     "NEON SHOP",  new Color(255, 0, 127), false);
+        drawCustomButton(g, btnSettings, "SETTINGS",   Color.GRAY,             false);
+        drawCustomButton(g, btnExit,     "EXIT GAME",  new Color(180, 30, 30), false);
     }
 
     private void drawShopScreen(Graphics2D g) {
@@ -658,13 +661,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // Exit Button
         drawCustomButton(g, btnSettingsExit, "BACK", Color.WHITE, false);
 
-        // Sound Button Rendering
+        // Sound Toggle Button
         String soundText = "BACKSOUND/SOUNDS: " + (AudioSynth.isSoundEnabled() ? "ON" : "OFF");
         drawCustomButton(g, btnToggleSound, soundText, new Color(0, 240, 255), false);
-
-        // Fullscreen Button
-        String windowText = "FULLSCREEN TOGGLE";
-        drawCustomButton(g, btnToggleWindow, windowText, new Color(255, 0, 127), false);
 
         // Control Instructions Cheat Sheet
         g.setColor(new Color(180, 180, 220));
@@ -803,6 +802,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             } else if (btnSettings.contains(p)) {
                 AudioSynth.playSelect();
                 currentState = GameState.SETTINGS;
+            } else if (btnExit.contains(p)) {
+                AudioSynth.playSelect();
+                System.exit(0);
             }
         } else if (currentState == GameState.SETTINGS) {
             if (btnSettingsExit.contains(p)) {
@@ -813,9 +815,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 boolean curSound = AudioSynth.isSoundEnabled();
                 AudioSynth.setSoundEnabled(!curSound);
                 frame.getPrefs().putBoolean(EndlessDriveGame.PREF_SOUND, !curSound);
-            } else if (btnToggleWindow.contains(p)) {
-                AudioSynth.playSelect();
-                frame.toggleFullscreen();
             }
         } else if (currentState == GameState.SHOP) {
             if (btnShopExit.contains(p)) {
