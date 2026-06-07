@@ -33,6 +33,10 @@ public class EndlessDriveGame extends JFrame {
         });
     }
 
+    // Fixed windowed size - single source of truth
+    private static final int WINDOW_WIDTH  = 900;
+    private static final int WINDOW_HEIGHT = 700;
+
     public EndlessDriveGame() {
         setTitle("Endless Drive: Synth Retro-Wave");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,25 +44,30 @@ public class EndlessDriveGame extends JFrame {
 
         // Load Preferences
         prefs = Preferences.userNodeForPackage(EndlessDriveGame.class);
-        
+
         // Initialize sound state
         boolean soundEnabled = prefs.getBoolean(PREF_SOUND, true);
         AudioSynth.setSoundEnabled(soundEnabled);
+
+        // Determine Fullscreen State before adding the panel
+        graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        boolean isFullscreen = prefs.getBoolean(PREF_FULLSCREEN, false);
+
+        if (isFullscreen) {
+            setUndecorated(true);
+        } else {
+            setUndecorated(false);
+            setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        }
 
         // Setup Main Panel
         gamePanel = new GamePanel(this);
         add(gamePanel);
 
-        // Determine Fullscreen State
-        graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        boolean isFullscreen = prefs.getBoolean(PREF_FULLSCREEN, false);
-        
         if (isFullscreen) {
-            setUndecorated(true);
+            // Must be called AFTER add(gamePanel) and pack equivalent
             graphicsDevice.setFullScreenWindow(this);
         } else {
-            setUndecorated(false);
-            setSize(900, 700);
             setLocationRelativeTo(null);
         }
     }
@@ -70,27 +79,34 @@ public class EndlessDriveGame extends JFrame {
         boolean isCurrentlyFullscreen = graphicsDevice.getFullScreenWindow() != null;
 
         if (isCurrentlyFullscreen) {
+            // 1) Release exclusive fullscreen before any other operation
             graphicsDevice.setFullScreenWindow(null);
-            setExtendedState(JFrame.NORMAL);
-            dispose(); // Terminate window temporarily to modify decoration state
+            // 2) Dispose so we can change the undecorated property
+            dispose();
             setUndecorated(false);
-            setSize(900, 700);
+            // 3) Show first - the OS creates the native peer with decorations
+            setVisible(true);
+            // 4) Force size and center AFTER visible so Windows respects the values
+            setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
             setLocationRelativeTo(null);
             prefs.putBoolean(PREF_FULLSCREEN, false);
         } else {
-            dispose(); // Terminate window temporarily to modify decoration state
+            // Dispose to allow toggling the undecorated property
+            dispose();
             setUndecorated(true);
+            setVisible(true);
             try {
                 graphicsDevice.setFullScreenWindow(this);
                 prefs.putBoolean(PREF_FULLSCREEN, true);
             } catch (Exception e) {
-                // Fallback to maximized screen if exclusive fullscreen fails
+                // Fallback to maximized if exclusive fullscreen is unavailable
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
                 prefs.putBoolean(PREF_FULLSCREEN, true);
             }
         }
-        setVisible(true);
-        gamePanel.requestFocusInWindow();
+
+        // Schedule focus on EDT after the window finishes painting
+        SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
     }
 
     public Preferences getPrefs() {
