@@ -25,7 +25,7 @@ public class EndlessDriveGame extends JFrame {
     }
 
     public EndlessDriveGame() {
-        setTitle("Endless Drive: Synth Retro-Wave");
+        setTitle("Endless Drive");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         prefs = Preferences.userNodeForPackage(EndlessDriveGame.class);
