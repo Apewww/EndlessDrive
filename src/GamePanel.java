@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     private int screenShakeAmount = 0;
     private Random random = new Random();
     private BufferedImage bgImg;
+    private BufferedImage menuBgImg; // background for menu screen
     private BufferedImage roadImg;
     private BufferedImage playerImg;
     private BufferedImage shopCarImg; // Image for generic shop cars
@@ -110,6 +111,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             desertNomadImg = ImageIO.read(new File("assets/DesertNomad.png"));
             obstacleImg = ImageIO.read(new File("assets/Cars2.png"));
             bgImg = ImageIO.read(new File("assets/Bg.png"));
+            menuBgImg = ImageIO.read(new File("assets/Home.png"));
             roadImg = ImageIO.read(new File("assets/jln.png"));
             placeholderImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         } catch (IOException e) {
@@ -145,10 +147,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         int centerY = h / 2;
 
         // Menu Buttons (centered horizontally, 4 items spaced evenly)
-        btnPlay.setBounds(w / 2 - 100, centerY - 50, 200, 45);
-        btnShop.setBounds(w / 2 - 100, centerY - -10, 200, 45);
-        btnSettings.setBounds(w / 2 - 100, centerY - -70, 200, 45);
-        btnExit.setBounds(w / 2 - 100, centerY - -130, 200, 45);
+        btnPlay.setBounds(w / 2 - 100, centerY - 50 + 50, 200, 45);
+        btnShop.setBounds(w / 2 - 100, centerY - -10 + 50, 200, 45);
+        btnSettings.setBounds(w / 2 - 100, centerY - -70 + 50, 200, 45);
+        btnExit.setBounds(w / 2 - 100, centerY - -130 + 50, 200, 45);
 
         // Shop Buttons
         btnShopPrev.setBounds(w / 2 - 250, centerY + 30, 60, 45);
@@ -254,8 +256,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         roadOffset += roadSpeed;
 
         // Player Horizontal steering with drift aesthetics
-                double steerSpeed = 4.5;
-        double verticalSpeed = 4.5;
+        double steerSpeed = 2.5;
+        double verticalSpeed = 4;
         if (keyLeft) {
             player.x -= steerSpeed;
             player.driftAngle = Math.max(-12, player.driftAngle - 1.5);
@@ -577,27 +579,33 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         int centerY = height / 2;
 
         // Overlay panel
-        g.setColor(new Color(11, 0, 26, 160));
-        g.fillRect(0, 0, width, height);
+        // Draw menu background image if available
+        if (menuBgImg != null) {
+            g.drawImage(menuBgImg, 0, 0, width, height, null);
+        } else {
+            // Fallback semi‑transparent overlay
+            g.setColor(new Color(11, 0, 26, 160));
+            g.fillRect(0, 0, width, height);
+        }
 
-        // Title "ENDLESS DRIVE" Retro synthwave typography
-        g.setFont(new Font("Impact", Font.ITALIC, 80));
-        String title = "ENDLESS DRIVE";
-        int titleWidth = g.getFontMetrics().stringWidth(title);
+        // // Title "ENDLESS DRIVE" Retro synthwave typography
+        // g.setFont(new Font("Impact", Font.ITALIC, 80));
+        // String title = "ENDLESS DRIVE";
+        // int titleWidth = g.getFontMetrics().stringWidth(title);
         
-        // Neon pink / magenta back drop shadow
-        g.setColor(new Color(255, 0, 127));
-        g.drawString(title, width/2 - titleWidth/2 + 3, centerY - 147);
+        // // Neon pink / magenta back drop shadow
+        // g.setColor(new Color(255, 0, 127));
+        // g.drawString(title, width/2 - titleWidth/2 + 3, centerY - 147);
 
-        // Main cyan text
-        g.setColor(new Color(0, 240, 255));
-        g.drawString(title, width/2 - titleWidth/2, centerY - 150);
+        // // Main cyan text
+        // g.setColor(new Color(0, 240, 255));
+        // g.drawString(title, width/2 - titleWidth/2, centerY - 150);
 
-        // Subtitle
-        g.setFont(new Font("Segoe UI", Font.ITALIC, 18));
-        g.setColor(Color.WHITE);
-        String subtitle = "Steer smoothly. Dodge oncoming racers. Collect neon shards.";
-        g.drawString(subtitle, width/2 - g.getFontMetrics().stringWidth(subtitle)/2, centerY - 90);
+        // // Subtitle
+        // g.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+        // g.setColor(Color.WHITE);
+        // String subtitle = "Steer smoothly. Dodge oncoming racers. Collect neon shards.";
+        // g.drawString(subtitle, width/2 - g.getFontMetrics().stringWidth(subtitle)/2, centerY - 90);
 
         // Display Top Info
         g.setFont(new Font("Segoe UI", Font.BOLD, 15));
