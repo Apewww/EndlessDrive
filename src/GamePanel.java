@@ -5,6 +5,10 @@ import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.prefs.Preferences;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
 
 /**
  * Primary Graphics rendering engine handling gameplay physics, drawing, inputs,
@@ -46,6 +50,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     // Visual effects variables
     private int screenShakeAmount = 0;
     private Random random = new Random();
+    private BufferedImage bgImg;
+    private BufferedImage roadImg;
+    private BufferedImage playerImg;
+    private BufferedImage shopCarImg; // Image for generic shop cars
+    private BufferedImage neonPulseImg; // Image for Neon Pulse skin
+    private BufferedImage desertNomadImg; // Image for Desert Nomad skin
+    private BufferedImage placeholderImg; // Empty placeholder image
+    private BufferedImage obstacleImg;
 
     // Control flags
     private boolean keyLeft = false, keyRight = false, keyUp = false, keyDown = false;
@@ -90,8 +102,32 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         loadGameData();
 
-        // Set default active skin
-        player = new Vehicle(425, 500, skins.get(selectedSkinIdx), 0);
+        // Load asset images
+        try {
+            playerImg = ImageIO.read(new File("assets/RoyalPhoenix.png"));
+            shopCarImg = ImageIO.read(new File("assets/Cars.png"));
+            neonPulseImg = ImageIO.read(new File("assets/NeonPulse.png"));
+            desertNomadImg = ImageIO.read(new File("assets/DesertNomad.png"));
+            obstacleImg = ImageIO.read(new File("assets/Cars2.png"));
+            bgImg = ImageIO.read(new File("assets/Bg.png"));
+            roadImg = ImageIO.read(new File("assets/jln.png"));
+            placeholderImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Set default active skin with proper image based on unlock status
+        BufferedImage imgForPlayer;
+        if (selectedSkinIdx == 3 && isSkinUnlocked(selectedSkinIdx)) {
+            imgForPlayer = playerImg;
+        } else if (selectedSkinIdx == 2 && isSkinUnlocked(selectedSkinIdx)) {
+            imgForPlayer = desertNomadImg;
+        } else if (selectedSkinIdx == 1 && isSkinUnlocked(selectedSkinIdx)) {
+            imgForPlayer = neonPulseImg;
+        } else {
+            imgForPlayer = shopCarImg;
+        }
+        player = new Vehicle(425, 500, skins.get(selectedSkinIdx), 0, imgForPlayer);
 
         // Setup Main Game timer looping at ~60 FPS (16ms per frame)
         gameTimer = new Timer(16, this);
@@ -133,10 +169,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
      * Loads high score, coins count, and skin states from storage preferences.
      */
     private void loadGameData() {
+        // Load saved data
         Preferences p = frame.getPrefs();
         highScore = p.getInt(EndlessDriveGame.PREF_HIGH_SCORE, 0);
         playerCoinsTotal = p.getInt(EndlessDriveGame.PREF_COINS, 0);
         selectedSkinIdx = p.getInt(EndlessDriveGame.PREF_ACTIVE_SKIN, 0);
+        // Validate selected skin is unlocked; if not, revert to default (0)
+        if (selectedSkinIdx != 0 && !isSkinUnlocked(selectedSkinIdx)) {
+            selectedSkinIdx = 0;
+        }
         if (selectedSkinIdx < 0 || selectedSkinIdx >= skins.size()) {
             selectedSkinIdx = 0;
         }
@@ -203,7 +244,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         if (roadSpeed < targetRoadSpeed) {
             roadSpeed += acceleration;
         } else if (roadSpeed > targetRoadSpeed) {
-            roadSpeed -= acceleration * 2.0;
+    roadSpeed -= acceleration * 2.0;
         }
 
         // Distance score accumulates proportionally to road speed
@@ -213,7 +254,39 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         roadOffset += roadSpeed;
 
         // Player Horizontal steering with drift aesthetics
-        double steerSpeed = 7.5;
+                double steerSpeed = 4.5;
+        double verticalSpeed = 4.5;
+        if (keyLeft) {
+            player.x -= steerSpeed;
+            player.driftAngle = Math.max(-12, player.driftAngle - 1.5);
+            spawnDriftSmoke();
+        } else if (keyRight) {
+            player.x += steerSpeed;
+            player.driftAngle = Math.min(12, player.driftAngle + 1.5);
+            spawnDriftSmoke();
+        } else {
+            // Pull drift angle back to zero when centering
+            if (player.driftAngle > 0) player.driftAngle = Math.max(0, player.driftAngle - 1.0);
+            if (player.driftAngle < 0) player.driftAngle = Math.min(0, player.driftAngle + 1.0);
+        }
+        // Vertical movement (forward/backward)
+                // Vertical movement (forward/backward)
+        if (keyUp) {
+            player.y -= verticalSpeed;
+        } else if (keyDown) {
+            player.y += verticalSpeed;
+        }
+        // Clamp vertical position within screen bounds
+        int topEdge = 0;
+        int bottomEdge = getHeight() - player.height;
+        if (player.y < topEdge) {
+            player.y = topEdge;
+        }
+        if (player.y > bottomEdge) {
+            player.y = bottomEdge;
+        }
+        // Horizontal movement and drift already handled above
+
         if (keyLeft) {
             player.x -= steerSpeed;
             player.driftAngle = Math.max(-12, player.driftAngle - 1.5);
@@ -260,7 +333,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 Skin trafficSkin = skins.get(random.nextInt(skins.size()));
                 // Coming downwards relative to player speed
                 double obSpeed = 2 + random.nextInt(5);
-                traffic.add(new Vehicle(spawnX, -100, trafficSkin, obSpeed));
+                traffic.add(new Vehicle(spawnX, -100, trafficSkin, obSpeed, obstacleImg));
             }
         }
 
@@ -290,7 +363,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             if (ob.getBounds().intersects(player.getBounds())) {
                 triggerExplosion(player.x + player.width/2.0, player.y + player.height/2.0);
                 AudioSynth.playCrash();
-                screenShakeAmount = 180; // ~3 seconds at 60fps
+                screenShakeAmount = 15; // reduced from 40 for shorter vibration
 
                 // Finalize Score stats
                 playerCoinsTotal += coinsCollectedThisRun;
@@ -445,47 +518,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         int width = getWidth();
         int height = getHeight();
 
-        // Background solid fill
-        g.setColor(new Color(10, 2, 22));
-        g.fillRect(0, 0, width, height);
-
-        // Draw horizontal perspective lines (Starfield perspective)
-        g.setColor(new Color(60, 10, 80));
-        g.setStroke(new BasicStroke(1));
-        int horizon = height / 3;
-        for (int i = horizon; i < height; i += 40) {
-            g.drawLine(0, i, width, i);
+        // Draw background image if available
+        if (bgImg != null) {
+            g.drawImage(bgImg, 0, 0, width, height, null);
         }
 
-        // Draw vertical perspective grid line beams on left and right shoulder panels
-        int totalLines = 14;
-        g.setStroke(new BasicStroke(2));
-        for (int i = 0; i <= totalLines; i++) {
-            int xStart = (width / totalLines) * i;
-            g.drawLine(xStart, horizon, (int) (xStart * 1.5 - width * 0.25), height);
-        }
-
-        // Draw Road Track Boundaries
+        // Draw road track image if available
         int trackWidth = 500;
         int leftEdge = (width - trackWidth) / 2;
-        int rightEdge = leftEdge + trackWidth;
-
-        // Dark Asphalt Road Surface
-        g.setColor(new Color(25, 10, 40));
-        g.fillRect(leftEdge, 0, trackWidth, height);
-
-        // Highlight margins (Neon cyber stripes)
-        g.setColor(new Color(0, 240, 255)); // Cyber Cyan
-        g.setStroke(new BasicStroke(4));
-        g.drawLine(leftEdge, 0, leftEdge, height);
-        g.drawLine(rightEdge, 0, rightEdge, height);
-
-        // Lane Dividers (Dashed Scrolling Lines)
-        g.setColor(new Color(255, 0, 127)); // Hot Pink Neon
-        g.setStroke(new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{30.0f, 30.0f}, (float) roadOffset));
-        int laneWidth = trackWidth / 3;
-        g.drawLine(leftEdge + laneWidth, 0, leftEdge + laneWidth, height);
-        g.drawLine(leftEdge + laneWidth * 2, 0, leftEdge + laneWidth * 2, height);
+        if (roadImg != null) {
+            g.drawImage(roadImg, leftEdge, 0, trackWidth, height, null);
+        }
+        // No additional grid or margin lines
     }
 
     private void drawGameOverScreen(Graphics2D g) {
@@ -609,7 +653,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         g.drawOval(width / 2 - 100, centerY - 150, 200, 200);
 
         // Render Preview Vehicle in center of pedestal
-        Vehicle mockCar = new Vehicle(width / 2 - 25, centerY - 95, currentPreview, 0);
+        Vehicle mockCar = new Vehicle(width / 2 - 25, centerY - 95, currentPreview, 0,
+            // Always show the skin image in preview, even if not unlocked
+            (previewSkinIdx == 3 ? playerImg : (previewSkinIdx == 2 ? desertNomadImg : (previewSkinIdx == 1 ? neonPulseImg : shopCarImg))));
         mockCar.draw(g);
 
         // Display Selected Skin Properties
@@ -833,8 +879,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                 if (isUnlocked) {
                     AudioSynth.playSelect();
                     selectedSkinIdx = previewSkinIdx;
-                    player.skin = previewedSkin;
-                    saveGameData();
+                player.skin = previewedSkin;
+                // Update player image for all skin indices (3=Royal Phoenix, 2=Desert Nomad, 1=Neon Pulse, else default)
+                player.img = (previewSkinIdx == 3) ? playerImg : (previewSkinIdx == 2 ? desertNomadImg : (previewSkinIdx == 1 ? neonPulseImg : shopCarImg));
+                saveGameData();
                 } else {
                     // Attempt to buy the skin
                     if (playerCoinsTotal >= previewedSkin.cost) {
@@ -843,6 +891,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                         unlockSkin(previewSkinIdx);
                         selectedSkinIdx = previewSkinIdx;
                         player.skin = previewedSkin;
+                    player.img = (previewSkinIdx == 3) ? playerImg : (previewSkinIdx == 2 ? desertNomadImg : (previewSkinIdx == 1 ? neonPulseImg : shopCarImg));
                         saveGameData();
                     } else {
                         // Synthesize error low-pitched double beep sound
