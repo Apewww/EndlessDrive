@@ -1,8 +1,10 @@
+// Library bawaan dari Java
 import java.awt.*;
 import java.awt.geom.*;
 
 /**
- * Score booster collectibles appearing on lanes.
+ * [Class Buatan Sendiri]
+ * Item kolektif peningkat skor yang muncul di jalur jalan raya (coin/shard).
  */
 public class Coin {
     public double x, y;

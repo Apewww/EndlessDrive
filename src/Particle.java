@@ -1,8 +1,10 @@
+// Library bawaan dari Java
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 /**
- * Neon explosion debris and drift smoke simulation particles.
+ * [Class Buatan Sendiri]
+ * Partikel simulasi untuk efek ledakan neon dan asap drift.
  */
 public class Particle {
     public double x, y, vx, vy;

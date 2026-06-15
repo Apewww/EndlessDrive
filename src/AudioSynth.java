@@ -1,9 +1,11 @@
+// Library bawaan dari Java
 import javax.sound.sampled.*;
 import java.util.Random;
 
 /**
- * Synthesizer engine to generate 8-bit retro sounds procedurally on-the-fly.
- * Generates sounds mathematically to eliminate any external file requirement.
+ * [Class Buatan Sendiri]
+ * Mesin synthesizer untuk menghasilkan suara retro 8-bit secara prosedural secara langsung.
+ * Menghasilkan suara secara matematis untuk menghilangkan kebutuhan file eksternal.
  */
 public class AudioSynth {
     private static boolean soundEnabled = true;

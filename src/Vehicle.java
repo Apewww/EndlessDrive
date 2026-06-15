@@ -1,9 +1,11 @@
+// Library bawaan dari Java
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Represents physical cars (player and obstacles).
+ * [Class Buatan Sendiri]
+ * Merepresentasikan mobil fisik (pemain dan rintangan).
  */
 public class Vehicle {
     public double x, y;

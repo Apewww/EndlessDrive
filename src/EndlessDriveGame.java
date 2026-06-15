@@ -1,12 +1,14 @@
+// Library bawaan dari Java
 import javax.swing.*;
 import java.awt.*;
 import java.util.prefs.Preferences;
 
 /**
- * Endless Drive - A Premium Retro-Synthwave Arcade Racing Game in Pure Java.
- * Features: Procedural Sound synthesis, Shop System, Skin Switcher, Visual Particles,
- * High Score System, and fully responsive retro GUI.
- * Runs in exclusive fullscreen at all times.
+ * [Class Buatan Sendiri (Turunan/Override dari JFrame bawaan Java)]
+ * Endless Drive - Game Balapan Arcade Retro-Synthwave Premium dengan Java Murni.
+ * Fitur: Sintesis suara prosedural, Sistem Toko, Pengubah Skin, Partikel Visual,
+ * Sistem Skor Tinggi, dan GUI retro yang sepenuhnya responsif.
+ * Berjalan dalam mode layar penuh eksklusif setiap saat.
  */
 public class EndlessDriveGame extends JFrame {
 

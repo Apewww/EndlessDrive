@@ -1,3 +1,4 @@
+// Library bawaan dari Java
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -11,8 +12,9 @@ import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 /**
- * Primary Graphics rendering engine handling gameplay physics, drawing, inputs,
- * and dynamic screens.
+ * [Class Buatan Sendiri (Turunan/Override dari JPanel bawaan Java, dan Mengimplementasikan Interface Listener bawaan Java)]
+ * Mesin perender grafis utama yang menangani fisika gameplay, penggambaran objek, input,
+ * dan layar dinamis.
  */
 public class GamePanel extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
     

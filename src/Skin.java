@@ -1,7 +1,9 @@
+// Library bawaan dari Java
 import java.awt.Color;
 
 /**
- * Skin model structure containing color styling, names, and purchase data.
+ * [Class Buatan Sendiri]
+ * Struktur model Skin yang berisi gaya warna, nama, dan data pembelian.
  */
 public class Skin {
     public String name;
