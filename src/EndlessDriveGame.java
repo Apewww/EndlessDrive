@@ -3,52 +3,66 @@ import java.awt.*;
 import java.util.prefs.Preferences;
 
 /**
- * Endless Drive - A Premium Retro-Synthwave Arcade Racing Game in Pure Java.
- * Features: Procedural Sound synthesis, Shop System, Skin Switcher, Visual Particles,
- * High Score System, and fully responsive retro GUI.
- * Runs in exclusive fullscreen at all times.
+ * Kelas EndlessDriveGame merupakan titik masuk (entry point) utama untuk aplikasi game.
+ * Kelas ini mewarisi JFrame bawaan Java dan mengatur jendela aplikasi agar berjalan
+ * dalam mode layar penuh eksklusif (exclusive fullscreen) setiap saat tanpa bingkai jendela (undecorated).
+ * 
+ * Pengaturan suara awal dimuat melalui SaveManager saat startup.
  */
 public class EndlessDriveGame extends JFrame {
 
-    // Preferences keys for saving data locally
-    static final String PREF_COINS          = "endless_drive_coins";
-    static final String PREF_HIGH_SCORE     = "endless_drive_high_score";
-    static final String PREF_UNLOCKED_SKINS = "endless_drive_unlocked_skins";
-    static final String PREF_ACTIVE_SKIN    = "endless_drive_active_skin";
-    static final String PREF_SOUND          = "endless_drive_sound";
+    private GamePanel gamePanel;
+    private SaveManager saveManager;
 
-    private GamePanel      gamePanel;
-    private Preferences    prefs;
-
+    /**
+     * Metode utama untuk meluncurkan game.
+     * Menggunakan SwingUtilities.invokeLater untuk memastikan pembuatan komponen GUI aman secara thread.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new EndlessDriveGame().setVisible(true));
     }
 
+    /**
+     * Konstruktor EndlessDriveGame.
+     * Mengatur konfigurasi jendela, fullscreen, serta menginisialisasi panel game.
+     */
     public EndlessDriveGame() {
         setTitle("Endless Drive");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        prefs = Preferences.userNodeForPackage(EndlessDriveGame.class);
+        // Menginisialisasi SaveManager untuk memuat preferensi suara
+        saveManager = new SaveManager();
+        AudioSynth.setSoundEnabled(saveManager.isSoundEnabled());
 
-        // Restore sound preference
-        AudioSynth.setSoundEnabled(prefs.getBoolean(PREF_SOUND, true));
-
-        // Always run in exclusive fullscreen — no decorations needed
+        // Jalankan game dalam mode fullscreen tanpa dekorasi bingkai jendela
         setUndecorated(true);
 
         gamePanel = new GamePanel(this);
         add(gamePanel);
 
-        // Claim exclusive fullscreen
+        // Meminta kontrol fullscreen eksklusif ke perangkat grafis default
         GraphicsDevice gd = GraphicsEnvironment
                 .getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
 
+        // Meminta fokus keyboard secara asinkron ke panel game
         SwingUtilities.invokeLater(() -> gamePanel.requestFocusInWindow());
     }
 
+    /**
+     * Mendapatkan objek SaveManager yang dimiliki frame.
+     * @return instansi SaveManager
+     */
+    public SaveManager getSaveManager() {
+        return saveManager;
+    }
+
+    /**
+     * Mempertahankan kompatibilitas jika ada kode eksternal yang memanggil getPrefs.
+     * @return instansi Preferences bawaan dari SaveManager
+     */
     public Preferences getPrefs() {
-        return prefs;
+        return saveManager.getPrefs();
     }
 }
