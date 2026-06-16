@@ -8,6 +8,8 @@ import java.util.Random;
  */
 public class AudioSynth {
     private static boolean soundEnabled = true;
+    private static Clip coinClip;
+    private static Clip selectClip;
 
     /**
      * Mengubah status aktif/nonaktif suara.

@@ -3,13 +3,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Kelas AssetManager bertanggung jawab untuk memuat dan menyediakan semua aset gambar
- * yang dibutuhkan dalam game. Hal ini memisahkan logika pemuatan file gambar dari logic gameplay.
- * 
- * Jika berkas gambar gagal dimuat (misalnya file hilang), sistem akan menggunakan
- * placeholder transparan berukuran 1x1 piksel agar program tidak crash saat merender.
- */
 public class AssetManager {
     private BufferedImage playerImg;
     private BufferedImage shopCarImg;
@@ -21,18 +14,11 @@ public class AssetManager {
     private BufferedImage roadImg;
     private BufferedImage placeholderImg;
 
-    /**
-     * Konstruktor AssetManager.
-     * Menginisialisasi placeholder transparan dan langsung memicu pemuatan aset.
-     */
     public AssetManager() {
         placeholderImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         loadAllAssets();
     }
 
-    /**
-     * Memuat seluruh aset gambar dari folder 'assets/'.
-     */
     private void loadAllAssets() {
         playerImg = loadImage("assets/RoyalPhoenix.png");
         shopCarImg = loadImage("assets/Cars.png");
@@ -44,11 +30,6 @@ public class AssetManager {
         roadImg = loadImage("assets/jln.png");
     }
 
-    /**
-     * Metode internal untuk memuat berkas gambar tunggal dengan penanganan IOException.
-     * @param path Lokasi berkas gambar
-     * @return BufferedImage gambar yang dimuat, atau placeholder jika gagal
-     */
     private BufferedImage loadImage(String path) {
         try {
             File file = new File(path);
