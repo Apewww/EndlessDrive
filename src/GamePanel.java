@@ -28,13 +28,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
     // Parameter Kecepatan Jalan & Fisika
     double roadOffset = 0;
-    double roadSpeed = 5;
-    double targetRoadSpeed = 10;
-    final double maxRoadSpeed = 22;
-    final double acceleration = 0.05;
+    double roadSpeed = 10;
 
     // Control flags (Input keyboard)
-    boolean keyLeft = false, keyRight = false, keyUp = false, keyDown = false;
+    boolean keyLeft = false, keyRight = false;
 
     // Konfigurasi Kendaraan Pemain
     Vehicle player;
@@ -205,22 +202,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
      * Memperbarui logika inti kecepatan jalan raya, skor jarak, dan memanggil update entitas.
      */
     private void updateGameplay() {
-        // Atur target kecepatan berdasarkan input gas/rem
-        if (keyUp) {
-            targetRoadSpeed = maxRoadSpeed;
-        } else if (keyDown) {
-            targetRoadSpeed = 3.0;
-        } else {
-            targetRoadSpeed = 10.0;
-        }
-
-        // Interpolasi kecepatan secara halus
-        if (roadSpeed < targetRoadSpeed) {
-            roadSpeed += acceleration;
-        } else if (roadSpeed > targetRoadSpeed) {
-            roadSpeed -= acceleration * 2.0;
-        }
-
         // Skor jarak bertambah sebanding dengan kecepatan kendaraan
         distanceScore += (int) (roadSpeed * 0.1);
 
@@ -242,13 +223,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
         // Posisikan mobil pemain di tengah jalur jalan raya
         int trackWidth = 500;
-        int leftEdge = (getWidth() > 0 ? getWidth() : 900 - trackWidth) / 2;
+        int leftEdge = ((getWidth() > 0 ? getWidth() : 900) - trackWidth) / 2;
         player.x = leftEdge + trackWidth / 2 - player.width / 2;
         player.y = (getHeight() > 0 ? getHeight() : 700) - 200;
         player.driftAngle = 0;
         player.skin = skins.get(selectedSkinIdx);
         player.img = getPlayerImageForSkin(selectedSkinIdx);
-        keyLeft = keyRight = keyUp = keyDown = false;
+        keyLeft = keyRight = false;
     }
 
     @Override
@@ -279,8 +260,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         if (currentState == GameState.GAME) {
             if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) keyLeft = true;
             if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) keyRight = true;
-            if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) keyUp = true;
-            if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) keyDown = true;
             if (keyCode == KeyEvent.VK_ESCAPE) {
                 currentState = GameState.MENU;
             }
@@ -293,8 +272,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         if (currentState == GameState.GAME) {
             if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) keyLeft = false;
             if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) keyRight = false;
-            if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) keyUp = false;
-            if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) keyDown = false;
         }
     }
 

@@ -50,7 +50,6 @@ public class EntityManager {
     public void update() {
         // 1. Pergerakan dasar pemain berdasarkan steering dan drift
         double steerSpeed = 2.5;
-        double verticalSpeed = 4;
 
         if (gp.keyLeft) {
             gp.player.x -= steerSpeed;
@@ -66,21 +65,6 @@ public class EntityManager {
             if (gp.player.driftAngle < 0) gp.player.driftAngle = Math.min(0, gp.player.driftAngle + 1.0);
         }
 
-        if (gp.keyUp) {
-            gp.player.y -= verticalSpeed;
-        } else if (gp.keyDown) {
-            gp.player.y += verticalSpeed;
-        }
-
-        // Batasi posisi pemain agar tidak keluar dari area layar atas/bawah
-        int topEdge = 0;
-        int bottomEdge = gp.getHeight() - gp.player.height;
-        if (gp.player.y < topEdge) {
-            gp.player.y = topEdge;
-        }
-        if (gp.player.y > bottomEdge) {
-            gp.player.y = bottomEdge;
-        }
 
         // Batasi posisi pemain di jalur jalan raya (kiri/kanan)
         int trackWidth = 500;
@@ -264,15 +248,15 @@ public class EntityManager {
         }
     }
 
-    public ArrayList<Vehicle> getTraffic() {
-        return traffic;
-    }
+    // public ArrayList<Vehicle> getTraffic() {
+    //     return traffic;
+    // }
 
-    public ArrayList<Coin> getCoins() {
-        return coins;
-    }
+    // public ArrayList<Coin> getCoins() {
+    //     return coins;
+    // }
 
-    public ArrayList<Particle> getParticles() {
-        return particles;
-    }
+    // public ArrayList<Particle> getParticles() {
+    //     return particles;
+    // }
 }
