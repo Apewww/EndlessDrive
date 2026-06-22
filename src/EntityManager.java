@@ -13,10 +13,12 @@ import java.util.Random;
  * - Melakukan deteksi tabrakan (collision detection) antara pemain dengan rintangan atau koin.
  * - Memicu efek visual berupa ledakan partikel atau percikan koin.
  */
+
 public class EntityManager {
+    //Encapsulation
     private GamePanel gp;
     
-    // Daftar entitas dinamis
+    // array generic
     private ArrayList<Vehicle> traffic;
     private ArrayList<Coin> coins;
     private ArrayList<Particle> particles;
@@ -82,6 +84,7 @@ public class EntityManager {
         }
 
         // 2. Spawn kendaraan rintangan (traffic) secara acak
+        // random buat munculin object dan ada requirment kayak maksimal jumlah object nya itu 4 untuk mobil
         if (random.nextInt(100) < 3.5 && traffic.size() < 4) {
             int lane = random.nextInt(3);
             int spawnX = leftEdge + 20 + lane * 155;
@@ -120,12 +123,14 @@ public class EntityManager {
         }
 
         // 4. Perbarui lalu lintas rintangan
+        // Object Obstacle
         for (int i = traffic.size() - 1; i >= 0; i--) {
             Vehicle ob = traffic.get(i);
             // Gerakan ke bawah relatif terhadap kecepatan jalan raya pemain
             ob.y += ob.speed + (gp.roadSpeed - 5) * 0.5;
 
             // Deteksi tabrakan dengan mobil pemain
+            // object collision getbound buat return kotak
             if (ob.getBounds().intersects(gp.player.getBounds())) {
                 triggerExplosion(gp.player.x + gp.player.width / 2.0, gp.player.y + gp.player.height / 2.0);
                 AudioSynth.playCrash();
@@ -149,7 +154,8 @@ public class EntityManager {
             }
         }
 
-        // 5. Perbarui pergerakan koin
+        // 5. Perbarui pergerakan 
+        // Coin Object
         for (int i = coins.size() - 1; i >= 0; i--) {
             Coin c = coins.get(i);
             c.y += gp.roadSpeed;
@@ -171,6 +177,7 @@ public class EntityManager {
         }
 
         // 6. Perbarui efek partikel
+        // Particle
         for (int i = particles.size() - 1; i >= 0; i--) {
             Particle p = particles.get(i);
             if (!p.update()) {

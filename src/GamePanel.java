@@ -1,15 +1,17 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
-import java.awt.image.BufferedImage;
+import javax.swing.*;
 
 /**
  * Kelas GamePanel bertindak sebagai pengendali utama (Controller/Mediator) game.
  * Mengimplementasikan loop utama permainan menggunakan Swing Timer, mendeteksi input keyboard/mouse,
  * serta menghubungkan berbagai modul (AssetManager, SaveManager, EntityManager, GameRenderer).
  */
+
+// Inheritance dari JPanel dan implements ActionListener, KeyListener, MouseListener, MouseMotionListener
 public class GamePanel extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
     
     // Status Layar Game (Game State)
@@ -104,6 +106,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // Timer utama game loop berjalan di kisaran 60 FPS (~16ms per frame)
         gameTimer = new Timer(16, this);
         gameTimer.start();
+        // ini bakal manggil kontrak dari impelent, actionperfomed
     }
 
     /** 
@@ -195,6 +198,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         if (screenShakeAmount > 0) {
             screenShakeAmount--;
         }
+
+        // gambar ulang pake data baru, map, entity dan lain lain
         repaint();
     }
 
