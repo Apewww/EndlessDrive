@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     final Rectangle btnShopAction = new Rectangle();
     final Rectangle btnShopExit = new Rectangle();
 
-    // Hitbox Tombol GUI Pengaturan (Settings)
+    // Hitbox Tombol GUI Setting
     final Rectangle btnToggleSound  = new Rectangle();
     final Rectangle btnSettingsExit = new Rectangle();
 
@@ -76,7 +76,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
      */
     public GamePanel(EndlessDriveGame frame) {
         this.frame = frame;
-        setBackground(new Color(11, 0, 26)); // Deep Synthwave Void Purple
+        setBackground(new Color(11, 0, 26));
         setFocusable(true);
         addKeyListener(this);
         addMouseListener(this);
@@ -106,7 +106,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         gameTimer.start();
     }
 
-    /**
+    /** 
      * Mengembalikan gambar yang sesuai untuk setiap indeks skin mobil pemain.
      */
     BufferedImage getPlayerImageForSkin(int idx) {
