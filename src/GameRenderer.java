@@ -86,19 +86,76 @@ public class GameRenderer {
         }
 
         // Tampilkan info Skor Tertinggi & Koin di bagian atas
-        g.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        g.setColor(new Color(255, 215, 0));
+        // HIGH SCORE - kanan atas
+        g.setFont(new Font("Impact", Font.BOLD, 28));
         String hscore = "HIGH SCORE: " + gp.highScore + "m";
-        g.drawString(hscore, width - g.getFontMetrics().stringWidth(hscore) - 40, 40);
+        int hscoreWidth = g.getFontMetrics().stringWidth(hscore);
+        int hscoreX = width - hscoreWidth - 40;
+        int hscoreY = 50;
+        // Shadow untuk kontras
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(hscore, hscoreX + 2, hscoreY + 2);
+        // Warna utama: neon cyan dengan glow
+        g.setColor(new Color(0, 240, 255));
+        g.drawString(hscore, hscoreX, hscoreY);
 
-        String coinBal = "COINS BALANCE: $" + gp.playerCoinsTotal;
-        g.drawString(coinBal, 40, 40);
+        // COINS BALANCE - kiri atas
+        g.setFont(new Font("Impact", Font.BOLD, 28));
+        String coinBal = "COINS: $" + gp.playerCoinsTotal;
+        int coinX = 40;
+        int coinY = 50;
+        // Shadow untuk kontras
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(coinBal, coinX + 2, coinY + 2);
+        // Warna utama: emas/ kuning neon
+        g.setColor(new Color(255, 215, 0));
+        g.drawString(coinBal, coinX, coinY);
 
         // Gambar tombol Menu Utama
         drawCustomButton(g, gp.btnPlay,     "DRIVE NOW",  new Color(0, 240, 255), true);
         drawCustomButton(g, gp.btnShop,     "NEON SHOP",  new Color(255, 0, 127), false);
         drawCustomButton(g, gp.btnSettings, "SETTINGS",   Color.GRAY,             false);
         drawCustomButton(g, gp.btnExit,     "EXIT GAME",  new Color(180, 30, 30), false);
+
+        // Credits di bagian bawah
+        drawCredits(g, width, height);
+    }
+
+    /**
+     * Menggambar informasi credit di bagian bawah layar menu.
+     */
+    private void drawCredits(Graphics2D g, int width, int height) {
+        g.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        
+        // Developer credit
+        String devText = "Developed by: EndlessDrive Team";
+        int devWidth = g.getFontMetrics().stringWidth(devText);
+        int devX = width / 2 - devWidth / 2;
+        int devY = height - 70;
+        g.setColor(new Color(0, 0, 0, 160));
+        g.drawString(devText, devX + 1, devY + 1);
+        g.setColor(new Color(180, 180, 220));
+        g.drawString(devText, devX, devY);
+
+        // Tech stack
+        String techText = "Built with Java Swing | Procedural Audio | Synthwave Aesthetic";
+        int techWidth = g.getFontMetrics().stringWidth(techText);
+        int techX = width / 2 - techWidth / 2;
+        int techY = height - 50;
+        g.setColor(new Color(0, 0, 0, 160));
+        g.drawString(techText, techX + 1, techY + 1);
+        g.setColor(new Color(140, 140, 180));
+        g.drawString(techText, techX, techY);
+
+        // Version
+        String verText = "Version 1.0.0";
+        int verWidth = g.getFontMetrics().stringWidth(verText);
+        int verX = width / 2 - verWidth / 2;
+        int verY = height - 30;
+        g.setColor(new Color(0, 0, 0, 160));
+        g.drawString(verText, verX + 1, verY + 1);
+        g.setColor(new Color(100, 100, 140));
+        g.drawString(verText, verX, verY);
     }
 
     /**
@@ -122,10 +179,17 @@ public class GameRenderer {
         drawCustomButton(g, gp.btnShopExit, "BACK", Color.WHITE, false);
 
         // Saldo Koin saat ini
-        g.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        g.setFont(new Font("Impact", Font.BOLD, 28));
+        String coinsStr = "COINS: $" + gp.playerCoinsTotal;
+        int coinsWidth = g.getFontMetrics().stringWidth(coinsStr);
+        int coinsX = width - coinsWidth - 50;
+        int coinsY = 80;
+        // Shadow untuk kontras
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(coinsStr, coinsX + 2, coinsY + 2);
+        // Warna utama: emas/ kuning neon
         g.setColor(new Color(255, 215, 0));
-        String coinsStr = "COINS BALANCE: $" + gp.playerCoinsTotal;
-        g.drawString(coinsStr, width - g.getFontMetrics().stringWidth(coinsStr) - 50, 75);
+        g.drawString(coinsStr, coinsX, coinsY);
 
         // Tombol Navigasi Kiri / Kanan
         drawCustomButton(g, gp.btnShopPrev, "<", new Color(0, 240, 255), false);
@@ -241,9 +305,17 @@ public class GameRenderer {
         g.drawString("SPEED: " + (int)(gp.roadSpeed * 10) + " KM/H", width / 2 - 90, 48);
 
         // Jumlah koin yang terkumpul
-        g.setFont(new Font("Impact", Font.PLAIN, 24));
+        g.setFont(new Font("Impact", Font.BOLD, 28));
+        String shardsStr = "SHARDS: " + gp.coinsCollectedThisRun;
+        int shardsWidth = g.getFontMetrics().stringWidth(shardsStr);
+        int shardsX = width - shardsWidth - 40;
+        int shardsY = 55;
+        // Shadow untuk kontras
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(shardsStr, shardsX + 2, shardsY + 2);
+        // Warna utama: emas/ kuning neon
         g.setColor(new Color(255, 215, 0));
-        g.drawString("SHARDS: " + gp.coinsCollectedThisRun, width - 180, 48);
+        g.drawString(shardsStr, shardsX, shardsY);
 
         // Menggambar entitas (Koin, Musuh, Efek Partikel) lewat EntityManager
         gp.entityManager.drawEntities(g);
@@ -276,17 +348,38 @@ public class GameRenderer {
         g.drawString(title, width/2 - titleWidth/2 - 2, centerY - 152);
 
         // Statistik Akhir Sesi
-        g.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        g.setColor(Color.WHITE);
+        // Distance
+        g.setFont(new Font("Impact", Font.BOLD, 28));
         String distStr = "Distance Traveled: " + gp.distanceScore + "m";
-        String coinsStr = "Coins Gathered: " + gp.coinsCollectedThisRun;
-        String bestStr = "Personal High Score: " + gp.highScore + "m";
+        int distWidth = g.getFontMetrics().stringWidth(distStr);
+        int distX = width/2 - distWidth/2;
+        int distY = centerY - 50;
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(distStr, distX + 2, distY + 2);
+        g.setColor(Color.WHITE);
+        g.drawString(distStr, distX, distY);
 
-        g.drawString(distStr, width/2 - g.getFontMetrics().stringWidth(distStr)/2, centerY - 50);
-        g.drawString(coinsStr, width/2 - g.getFontMetrics().stringWidth(coinsStr)/2, centerY);
-        
+        // Coins Gathered
+        g.setFont(new Font("Impact", Font.BOLD, 28));
+        String coinsStr = "Coins Gathered: " + gp.coinsCollectedThisRun;
+        int coinsWidth = g.getFontMetrics().stringWidth(coinsStr);
+        int coinsX = width/2 - coinsWidth/2;
+        int coinsY = centerY + 10;
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(coinsStr, coinsX + 2, coinsY + 2);
         g.setColor(new Color(255, 215, 0));
-        g.drawString(bestStr, width/2 - g.getFontMetrics().stringWidth(bestStr)/2, centerY + 50);
+        g.drawString(coinsStr, coinsX, coinsY);
+        
+        // Personal High Score - lebih besar dan menonjol
+        g.setFont(new Font("Impact", Font.BOLD, 32));
+        String bestStr = "PERSONAL HIGH SCORE: " + gp.highScore + "m";
+        int bestWidth = g.getFontMetrics().stringWidth(bestStr);
+        int bestX = width/2 - bestWidth/2;
+        int bestY = centerY + 70;
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(bestStr, bestX + 2, bestY + 2);
+        g.setColor(new Color(255, 215, 0));
+        g.drawString(bestStr, bestX, bestY);
 
         // Tombol Ulang / Kembali ke Menu
         drawCustomButton(g, gp.btnGoAgain, "PLAY AGAIN", new Color(0, 240, 255), true);

@@ -1,17 +1,25 @@
 @echo off
-:: Create compilation output folder if it doesn't exist
-if not exist bin (
-    mkdir bin
+REM Run script for EndlessDrive executable JAR
+
+echo Starting EndlessDrive...
+
+if not exist EndlessDrive.jar (
+    echo Error: EndlessDrive.jar not found!
+    echo Please run build.bat first to build the project.
+    pause
+    exit /b 1
 )
 
-echo Compiling Java source files to 'bin' folder...
-javac -d bin -classpath "lib/*" src/*.java
+if not exist assets (
+    echo Warning: assets folder not found next to JAR.
+    echo Game may not display images correctly.
+    echo.
+)
 
-:: If compilation is successful, run the game
-if %errorlevel% equ 0 (
-    echo Running Endless Drive...
-    java -cp "bin;lib/*" EndlessDriveGame
-) else (
-    echo Compilation failed.
+java -jar EndlessDrive.jar
+
+if %errorlevel% neq 0 (
+    echo.
+    echo Game exited with error code %errorlevel%
     pause
 )
