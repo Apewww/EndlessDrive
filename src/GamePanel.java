@@ -1,27 +1,34 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
- * Kelas GamePanel bertindak sebagai pengendali utama (Controller/Mediator) game.
- * Mengimplementasikan loop utama permainan menggunakan Swing Timer, mendeteksi input keyboard/mouse,
- * serta menghubungkan berbagai modul (AssetManager, SaveManager, EntityManager, GameRenderer).
+ * Kelas GamePanel bertindak sebagai pengendali utama (Controller/Mediator)
+ * game. Mengimplementasikan loop utama permainan menggunakan Swing Timer,
+ * mendeteksi input keyboard/mouse, serta menghubungkan berbagai modul
+ * (AssetManager, SaveManager, EntityManager, GameRenderer).
  */
-
 // Inheritance dari JPanel dan implements ActionListener, KeyListener, MouseListener, MouseMotionListener
 public class GamePanel extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
-    
+
     // Status Layar Game (Game State)
-    public enum GameState { MENU, GAME, SETTINGS, SHOP, GAME_OVER }
+    public enum GameState {
+        MENU, GAME, SETTINGS, SHOP, GAME_OVER
+    }
     GameState currentState = GameState.MENU;
 
     // Referensi ke Frame Utama
     private EndlessDriveGame frame;
     private Timer gameTimer;
-    
+
     // Modul pendukung hasil modularisasi
     AssetManager assetManager;
     SaveManager saveManager;
@@ -65,7 +72,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     final Rectangle btnShopExit = new Rectangle();
 
     // Hitbox Tombol GUI Setting
-    final Rectangle btnToggleSound  = new Rectangle();
+    final Rectangle btnToggleSound = new Rectangle();
     final Rectangle btnSettingsExit = new Rectangle();
 
     // Hitbox Tombol GUI Game Over
@@ -74,6 +81,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
 
     /**
      * Konstruktor GamePanel.
+     *
      * @param frame Frame utama aplikasi
      */
     public GamePanel(EndlessDriveGame frame) {
@@ -83,6 +91,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         addKeyListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
+        // Ensure the panel can receive keyboard focus
+        requestFocusInWindow();
 
         // Katalog Skin Mobil
         skins.add(new Skin("Apex Crimson", 0, new Color(220, 20, 60), new Color(40, 40, 45), new Color(255, 50, 50), "Mobil sport standar berkinerja tinggi. Siap melaju."));
@@ -109,23 +119,32 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         // ini bakal manggil kontrak dari impelent, actionperfomed
     }
 
-    /** 
+    /**
      * Mengembalikan gambar yang sesuai untuk setiap indeks skin mobil pemain.
      */
     BufferedImage getPlayerImageForSkin(int idx) {
-        if (idx == 3) return assetManager.getPlayerImg();
-        if (idx == 2) return assetManager.getDesertNomadImg();
-        if (idx == 1) return assetManager.getNeonPulseImg();
+        if (idx == 3) {
+            return assetManager.getPlayerImg();
+        }
+        if (idx == 2) {
+            return assetManager.getDesertNomadImg();
+        }
+        if (idx == 1) {
+            return assetManager.getNeonPulseImg();
+        }
         return assetManager.getShopCarImg();
     }
 
     /**
-     * Perhitungan posisi dinamis tombol GUI agar responsif di berbagai resolusi layar.
+     * Perhitungan posisi dinamis tombol GUI agar responsif di berbagai resolusi
+     * layar.
      */
     private void recalculateUIBounds() {
         int w = getWidth();
         int h = getHeight();
-        if (w <= 0 || h <= 0) return;
+        if (w <= 0 || h <= 0) {
+            return;
+        }
 
         int centerY = h / 2;
 
@@ -157,7 +176,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
         highScore = saveManager.getHighScore();
         playerCoinsTotal = saveManager.getCoins();
         selectedSkinIdx = saveManager.getActiveSkin();
-        
+
         // Validasi agar skin terpilih sudah di-unlock
         if (selectedSkinIdx != 0 && !isSkinUnlocked(selectedSkinIdx)) {
             selectedSkinIdx = 0;
@@ -193,7 +212,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
             // Menggulirkan garis neon di menu utama secara perlahan
             roadOffset += 1.5;
         }
-        
+
         // Mengurangi efek getar layar perlahan
         if (screenShakeAmount > 0) {
             screenShakeAmount--;
@@ -204,7 +223,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     }
 
     /**
-     * Memperbarui logika inti kecepatan jalan raya, skor jarak, dan memanggil update entitas.
+     * Memperbarui logika inti kecepatan jalan raya, skor jarak, dan memanggil
+     * update entitas.
      */
     private void updateGameplay() {
         // Skor jarak bertambah sebanding dengan kecepatan kendaraan
@@ -256,17 +276,27 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
         if (currentState == GameState.GAME) {
-            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) keyLeft = true;
-            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) keyRight = true;
+            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
+                keyLeft = true;
+            }
+            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
+                keyRight = true;
+            }
             if (keyCode == KeyEvent.VK_ESCAPE) {
                 currentState = GameState.MENU;
+                currentState = GameState.MENU;
+            }
+            // Press F12 to take screenshot
+            if (keyCode == KeyEvent.VK_F12) {
+                captureScreenshot();
             }
         }
     }
@@ -275,8 +305,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
         if (currentState == GameState.GAME) {
-            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) keyLeft = false;
-            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) keyRight = false;
+            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
+                keyLeft = false;
+            }
+            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
+                keyRight = false;
+            }
         }
     }
 
@@ -350,7 +384,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
                                     buffer[i] = (byte) (Math.sin(2 * Math.PI * freq * i / 8000.0) * 127);
                                 }
                                 AudioSynth.playBuffer(buffer);
-                            } catch (Exception ignored) {}
+                            } catch (Exception ignored) {
+                            }
                         }).start();
                     }
                 }
@@ -368,19 +403,24 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
 
     @Override
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {
+    }
 
     @Override
-    public void mouseEntered(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {
+    }
 
     @Override
-    public void mouseExited(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {
+    }
 
     @Override
-    public void mouseDragged(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {
+    }
 
     @Override
     public void mouseMoved(MouseEvent e) {
@@ -389,6 +429,28 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Mo
     }
 
     public EndlessDriveGame getFrame() {
-        return frame;
+        return frame; 
+    }
+
+    // Capture screenshot of the current game panel
+    private void captureScreenshot() {
+        try {
+            // Create an image with the same dimensions as the panel
+            BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = img.createGraphics();
+            // Use printAll to capture the full component hierarchy and custom painting
+            printAll(g2d);
+            g2d.dispose();
+            File dir = new File("screenshots");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            File out = new File(dir, "screenshot_" + timestamp + ".png");
+            ImageIO.write(img, "png", out);
+            System.out.println("Screenshot saved: " + out.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
